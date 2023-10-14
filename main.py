@@ -62,10 +62,12 @@ def start_backtest(data):
 
 
 config = Config(RepositoryEnv('.env.local'))
+port = config.get('PORT')
 app = connexion.FlaskApp(__name__,
         server='tornado',
         specification_dir='',
         options={'swagger_url': '/swagger-ui'})
 app.add_api('openapi.yaml')
+print(f' * Checkout SwaggerUI http://127.0.0.1:{port}/swagger-ui/')
 socketio = SocketIO(app.app)
-socketio.run(app.app, port=config.get('PORT'))
+socketio.run(app.app, port=port)
