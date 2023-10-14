@@ -3,7 +3,8 @@ from flask import jsonify
 from decouple import Config, RepositoryEnv
 from flask_socketio import SocketIO
 
-from schemas_request import StartRequest #, validate
+from schemas_request import StartRequest
+from backtest import get_signals_for_timerange, parse_urls, run_test, get_stats
 
 
 def post_greeting(name: str):
@@ -16,9 +17,9 @@ def validate(cls):
             try:
                 data = cls(**connexion.request.json)
                 data.validate()
-                return func(data)
             except Exception as ex:
                 return jsonify({"error": "Invalid request schema", "details": str(ex)}), 401
+            return func(data)
         return wrapper
     return decorator
 
@@ -26,39 +27,42 @@ def validate(cls):
 '''
 {
   "asset": "BTCUSDT",
-  "end_time": 15,
+  "interval": "1d",
+  "starting_value": 1000000,
+  "start_time": 1503100799999,
+  "end_time": 1693180799999,
   "model_url": {
-    "host": "localhost",
-    "port": 4001,
-    "slug": "action"
+    "host": "127.0.0.1",
+    "port": 51002,
+    "slug": "/action"
   },
   "signals": [
     {
       "name": "price",
       "url": {
-        "host": "localhost",
-        "port": 4002,
-        "slug": "price/latest/BTCUSDT"
+        "host": "127.0.0.1",
+        "port": 50001,
+        "slug": "/price/range/{asset}/{interval}/{start_time}/{end_time}"
+      }
+    },
+    {
+      "name": "rsi",
+      "url": {
+        "host": "127.0.0.1",
+        "port": 50001,
+        "slug": "/price/range/{asset}/{interval}/{start_time}/{end_time}/rsi"
       }
     }
-  ],
-  "start_time": 10,
-  "timeframe": "1d"
+  ]
 }
 '''
 @validate(StartRequest)
-def start_backtest(data):
-    # get all signals for all timeframes
-    # combine signals
-    # for each:
-    #   pass to model and get action
-    #   simulate result
-    #   save progress
-    # save results
-    return {}, 200
-
-# create demo model (just random action)
-# once all this is working, add RL to model
+def start_backtest(data: StartRequest):
+    data = parse_urls(data)
+    signals = get_signals_for_timerange(data.signals)
+    results = run_test(signals, data.model_url, data.starting_value)
+    stats = get_stats(signals, results, data.starting_value)
+    return stats, 200
 
 
 config = Config(RepositoryEnv('.env.local'))

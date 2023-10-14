@@ -51,9 +51,13 @@ components:
         asset:
           description: e.g. BTCUSDT
           type: string
-        timeframe:
+        interval:
           description: e.g. 1m
           type: string
+        starting_value:
+          description: e.g. 1000000
+          type: number
+          format: float
         start_time:
           description: e.g. 1602615471 (Unix timestamp 13.10.2020 18:57:51)
           type: integer

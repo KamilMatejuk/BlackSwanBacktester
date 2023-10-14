@@ -20,7 +20,8 @@ class URL:
 @dataclass
 class StartRequest:
     asset: str
-    timeframe: str
+    interval: str
+    starting_value: float
     start_time: int
     end_time: int
     model_url: URL
@@ -29,11 +30,13 @@ class StartRequest:
     def validate(self):
         assert len(self.asset) > 0, \
             'Cannot pass empty asset'
-        assert self.timeframe in ['1s', '1m', '1h', '1d'], \
-            'Only supported timeframes are 1s, 1m, 1h, 1d'
+        assert self.interval in ['1s', '1m', '1h', '1d'], \
+            'Only supported intervals are 1s, 1m, 1h, 1d'
+        assert self.starting_value > 0, \
+            'Starting account value has to be positive'
         assert self.start_time > 0, \
             'Start time should be after 01.01.1970r'
-        assert self.end_time < time.time(), \
+        assert self.end_time < time.time()*1000, \
             'End time cannot be in the future'
         assert self.start_time < self.end_time, \
             'End time has to be after start time'
