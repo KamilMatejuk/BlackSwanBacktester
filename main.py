@@ -7,10 +7,6 @@ from schemas_request import StartRequest
 from backtest import get_signals_for_timerange, parse_urls, run_test, get_stats
 
 
-def post_greeting(name: str):
-    return f'Hello {name}', 200
-
-
 def validate(cls):
     def decorator(func):
         def wrapper(*args, **kwargs):
