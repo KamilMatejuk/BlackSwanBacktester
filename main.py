@@ -6,10 +6,6 @@ from flask_socketio import SocketIO
 from schemas_request import StartRequest #, validate
 
 
-def post_greeting(name: str):
-    return f'Hello {name}', 200
-
-
 def validate(cls):
     def decorator(func):
         def wrapper(*args, **kwargs):
