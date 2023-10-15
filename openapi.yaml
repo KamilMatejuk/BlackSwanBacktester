@@ -3,7 +3,7 @@ info:
   title: Backtesting API
   version: '0.1'
 paths:
-  /backtest/start:
+  /start:
     post:
       operationId: main.start_backtest
       description: start a new backtest
