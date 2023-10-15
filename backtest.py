@@ -58,19 +58,20 @@ def run_test(signals: pd.DataFrame, model: URL, starting: float):
 def get_stats(signals: pd.DataFrame, results: pd.DataFrame, starting: float):
     data = pd.merge(signals, results, on='timestamp')
     transactions = []
-    transaction = { 'type': 'model' }
+    transaction = {}
     value = float(starting)
     for _, row in data.iterrows():
         if row['action'] == 1:
             transaction['buy_time'] = row['timestamp']
             transaction['buy_price'] = row['price']
         if row['action'] == -1:
+            transaction['type'] = 'model'
             transaction['sell_time'] = row['timestamp']
             transaction['sell_price'] = row['price']
             transaction['profit'] = row['value_account'] - value
             value = row['value_account']
             transactions.append(transaction)
-            transaction = { 'type': 'model' }
+            transaction = {}
     if len(transaction) > 0:
         transaction['type'] = 'automatic closing of open positions at the end of test'
         transaction['sell_time'] = data.at[len(data)-1, 'timestamp']
