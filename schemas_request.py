@@ -14,7 +14,6 @@ class URL:
             f'{name} URL host has to be localhost or IP address'
         assert isinstance(self.port, int) and self.port >= 1024 and self.port <= 65_535, \
             f'{name} URL port has to be between 1024 and 65535'
-        assert len(self.slug) > 0, f'{name} URL slug has to be specified'
             
 
 @dataclass
